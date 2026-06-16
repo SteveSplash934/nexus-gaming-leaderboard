@@ -1,4 +1,4 @@
-version: '3.8'
+name: 'Nexus Gaming Leaderboard System'
 
 services:
   # ---------------------------------------------------------------------------
