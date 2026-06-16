@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. API Gateway Engine (Public Facing)
+  # ---------------------------------------------------------------------------
+  api_gateway_engine:
+    build:
+      context: ./services/api_gateway_engine
+    container_name: nexus_api_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - PLAYER_ENGINE_URL=http://player_engine:8001
+      - MATCH_ENGINE_URL=http://match_engine:8002
+      - LEADERBOARD_ENGINE_URL=http://leaderboard_engine:8003
+    networks:
+      - nexus_internal
+    # depends_on:
+    #   - player_engine
+    #   - match_engine
+    #   - leaderboard_engine
+
+  # ---------------------------------------------------------------------------
+  # Services 2 through 5 are commented out until we build their code/Dockerfiles
+  # ---------------------------------------------------------------------------
+  
+  # player_engine:
+  # ... (commented out)
+  
+  # match_engine:
+  # ... (commented out)
+
+  # leaderboard_engine:
+  # ... (commented out)
+
+  # ai_engine:
+  # ... (commented out)
+
+# volumes:
+#   player_db_data:
+#     name: nexus_player_db
+#   match_db_data:
+#     name: nexus_match_db
+
+networks:
+  nexus_internal:
+    name: nexus_internal_network
+    driver: bridge
