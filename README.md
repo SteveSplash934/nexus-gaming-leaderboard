@@ -8,11 +8,11 @@ The system is separated into five independent engines, demonstrating robust micr
 
 **For a full technical breakdown, local setup instructions, and specific endpoints of each engine, please refer to their dedicated documentation:**
 
-* 🚦 **[API Gateway Engine (`api_gateway_engine`)](https://www.google.com/search?q=services/api_gateway_engine/README.md):** Python/FastAPI - Central traffic routing and circuit breaking.
-* 👤 **[Player Engine (`player_engine`)](https://www.google.com/search?q=services/player_engine/README.md):** Python/Django - Profile and identity management using UUIDv4.
-* 🎮 **[Match Engine (`match_engine`)](https://www.google.com/search?q=services/match_engine/README.md):** Node.js/Express (via Bun) - High-speed match logging.
-* 🏆 **[Leaderboard Engine (`leaderboard_engine`)](https://www.google.com/search?q=services/leaderboard_engine/README.md):** Python/Flask - Cross-service data compilation and sorting.
-* 🧠 **[AI Engine (`ai_engine`)](https://www.google.com/search?q=services/ai_engine/README.md):** Python/FastAPI + Ollama - LLM text generation for dynamic hype messages.
+* 🚦 **[API Gateway Engine (`api_gateway_engine`)](./services/api_gateway_engine/README.md):** Python/FastAPI - Central traffic routing and circuit breaking.
+* 👤 **[Player Engine (`player_engine`)](./services/player_engine/README.md):** Python/Django - Profile and identity management using UUIDv4.
+* 🎮 **[Match Engine (`match_engine`)](./services/match_engine/README.md):** Node.js/Express (via Bun) - High-speed match logging.
+* 🏆 **[Leaderboard Engine (`leaderboard_engine`)](./services/leaderboard_engine/README.md):** Python/Flask - Cross-service data compilation and sorting.
+* 🧠 **[AI Engine (`ai_engine`)](./services/ai_engine/README.md):** Python/FastAPI + Ollama - LLM text generation for dynamic hype messages.
 
 ## 🛠 Prerequisites
 
@@ -52,9 +52,9 @@ This repository enforces automated quality checks via GitHub Actions located in 
 
 For overarching system design and deployment strategies, refer to the global `Docs/` folder:
 
-* [Product Requirements (PRD)](https://www.google.com/search?q=Docs/PRD.md)
-* [Engineering Design (PED)](https://www.google.com/search?q=Docs/PED.md)
-* [API Contracts & Response Guidelines](https://www.google.com/search?q=Docs/API_CONTRACTS.md)
-* [Database Schema & Data Flow](https://www.google.com/search?q=Docs/SCHEMA.md)
-* [Testing Strategy](https://www.google.com/search?q=Docs/TESTING.md)
-* [Deployment Guide](https://www.google.com/search?q=Docs/DEPLOYMENT.md)
+* [Product Requirements (PRD)](./Docs/PRD.md)
+* [Engineering Design (PED)](./Docs/PED.md)
+* [API Contracts & Response Guidelines](./Docs/API_CONTRACTS.md)
+* [Database Schema & Data Flow](./Docs/SCHEMA.md)
+* [Testing Strategy](./Docs/TESTING.md)
+* [Deployment Guide](./Docs/DEPLOYMENT.md)
