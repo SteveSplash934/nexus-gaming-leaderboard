@@ -1,4 +1,4 @@
-name: 'Nexus Gaming Leaderboard System'
+name: 'Nexus_Gaming_Leaderboard_System'
 
 services:
   # ---------------------------------------------------------------------------
@@ -16,17 +16,28 @@ services:
       - LEADERBOARD_ENGINE_URL=http://leaderboard_engine:8003
     networks:
       - nexus_internal
-    # depends_on:
-    #   - player_engine
+    depends_on:
+      - player_engine
     #   - match_engine
     #   - leaderboard_engine
 
   # ---------------------------------------------------------------------------
-  # Services 2 through 5 are commented out until we build their code/Dockerfiles
+  # 2. Player Engine (Internal)
   # ---------------------------------------------------------------------------
-  
-  # player_engine:
-  # ... (commented out)
+  player_engine:
+    build:
+      context: ./services/player_engine
+    container_name: nexus_player_engine
+    expose:
+      - "8001"
+    volumes:
+      - player_db_data:/app/data
+    networks:
+      - nexus_internal
+
+  # ---------------------------------------------------------------------------
+  # Services 3 through 5 are commented out until we build their code/Dockerfiles
+  # ---------------------------------------------------------------------------
   
   # match_engine:
   # ... (commented out)
@@ -37,9 +48,12 @@ services:
   # ai_engine:
   # ... (commented out)
 
-# volumes:
-#   player_db_data:
-#     name: nexus_player_db
+# ---------------------------------------------------------------------------
+# Volumes & Networks
+# ---------------------------------------------------------------------------
+volumes:
+  player_db_data:
+    name: nexus_player_db
 #   match_db_data:
 #     name: nexus_match_db
 
