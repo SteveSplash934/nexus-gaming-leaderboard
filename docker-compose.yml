@@ -18,7 +18,7 @@ services:
       - nexus_internal
     depends_on:
       - player_engine
-    #   - match_engine
+      - match_engine
     #   - leaderboard_engine
 
   # ---------------------------------------------------------------------------
@@ -36,12 +36,23 @@ services:
       - nexus_internal
 
   # ---------------------------------------------------------------------------
-  # Services 3 through 5 are commented out until we build their code/Dockerfiles
+  # 3. Match Engine (Internal)
+  # ---------------------------------------------------------------------------
+  match_engine:
+    build:
+      context: ./services/match_engine
+    container_name: nexus_match_engine
+    expose:
+      - "8002"
+    volumes:
+      - match_db_data:/app/data
+    networks:
+      - nexus_internal
+
+  # ---------------------------------------------------------------------------
+  # Services 4 and 5 are commented out until we build their code/Dockerfiles
   # ---------------------------------------------------------------------------
   
-  # match_engine:
-  # ... (commented out)
-
   # leaderboard_engine:
   # ... (commented out)
 
@@ -54,8 +65,8 @@ services:
 volumes:
   player_db_data:
     name: nexus_player_db
-#   match_db_data:
-#     name: nexus_match_db
+  match_db_data:
+    name: nexus_match_db
 
 networks:
   nexus_internal:

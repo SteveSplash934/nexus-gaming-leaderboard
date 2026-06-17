@@ -4,6 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.db import IntegrityError
 from .models import Player
+from django.views.decorators.http import require_http_methods
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -70,3 +72,12 @@ def get_internal_player(request, player_id):
                 "message": "The requested player profile does not exist"
             }
         }, status=404)
+    
+@require_http_methods(["GET"])
+def health_check(request):
+    """Enables the API Gateway to monitor the service health state"""
+    return JsonResponse({
+        "success": True,
+        "service": "player_engine",
+        "status": "healthy"
+    }, status=200)
