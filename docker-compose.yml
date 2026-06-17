@@ -19,7 +19,7 @@ services:
     depends_on:
       - player_engine
       - match_engine
-    #   - leaderboard_engine
+      - leaderboard_engine
 
   # ---------------------------------------------------------------------------
   # 2. Player Engine (Internal)
@@ -50,12 +50,29 @@ services:
       - nexus_internal
 
   # ---------------------------------------------------------------------------
-  # Services 4 and 5 are commented out until we build their code/Dockerfiles
+  # 4. Leaderboard Engine (Internal)
+  # ---------------------------------------------------------------------------
+  leaderboard_engine:
+    build:
+      context: ./services/leaderboard_engine
+    container_name: nexus_leaderboard_engine
+    expose:
+      - "8003"
+    environment:
+      - PLAYER_ENGINE_URL=http://player_engine:8001
+      - MATCH_ENGINE_URL=http://match_engine:8002
+      - AI_ENGINE_URL=http://ai_engine:8004
+    networks:
+      - nexus_internal
+    depends_on:
+      - player_engine
+      - match_engine
+    #   - ai_engine
+
+  # ---------------------------------------------------------------------------
+  # Services 5 is commented out until we build its code/Dockerfile
   # ---------------------------------------------------------------------------
   
-  # leaderboard_engine:
-  # ... (commented out)
-
   # ai_engine:
   # ... (commented out)
 
