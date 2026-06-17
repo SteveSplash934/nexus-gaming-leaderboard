@@ -1,0 +1,15 @@
+{
+    "name": "match-engine",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "bun run src/index.js",
+        "dev": "bun --watch src/index.js"
+    },
+    "dependencies": {
+        "express": "latest",
+        "uuid": "latest",
+        "cors": "latest"
+    }
+}
