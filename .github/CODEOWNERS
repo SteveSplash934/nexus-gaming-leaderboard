@@ -1,0 +1,18 @@
+# Global owners (receives fallback review requests)
+*                               @SteveSplash934
+
+# Infrastructure & Workflows
+/.github/workflows/             @SteveSplash934
+/.github/actions/               @SteveSplash934
+/docker-compose.yml             @SteveSplash934
+
+# Microservice Engines
+/services/api_gateway_engine/   @SteveSplash934
+/services/player_engine/        @SteveSplash934
+/services/match_engine/         @SteveSplash934
+/services/leaderboard_engine/   @SteveSplash934
+/services/ai_engine/            @SteveSplash934
+
+# Documentation
+/Docs/                          @SteveSplash934
+/README.md                      @SteveSplash934
