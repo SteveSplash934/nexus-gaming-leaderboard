@@ -3,31 +3,29 @@ name: 'Nexus_Gaming_Leaderboard_System'
 services:
   # ---------------------------------------------------------------------------
   # 1. API Gateway Engine (Public Facing)
-  # Central traffic controller and health monitor.
   # ---------------------------------------------------------------------------
-  api_gateway_engine:
+  api-gateway-engine:
     build:
       context: ./services/api_gateway_engine
     container_name: nexus_api_gateway
     ports:
-      - "8000:8000" # Exposes only the gateway publicly
+      - "8000:8000"
     environment:
-      - PLAYER_ENGINE_URL=http://player_engine:8001
-      - MATCH_ENGINE_URL=http://match_engine:8002
-      - LEADERBOARD_ENGINE_URL=http://leaderboard_engine:8003
-      - AI_ENGINE_URL=http://ai_engine:8004
+      - PLAYER_ENGINE_URL=http://player-engine:8001
+      - MATCH_ENGINE_URL=http://match-engine:8002
+      - LEADERBOARD_ENGINE_URL=http://leaderboard-engine:8003
+      - AI_ENGINE_URL=http://ai-engine:8004
     networks:
       - nexus_internal
     depends_on:
-      - player_engine
-      - match_engine
-      - leaderboard_engine
+      - player-engine
+      - match-engine
+      - leaderboard-engine
 
   # ---------------------------------------------------------------------------
   # 2. Player Engine (Internal)
-  # Django profile database service.
   # ---------------------------------------------------------------------------
-  player_engine:
+  player-engine:
     build:
       context: ./services/player_engine
     container_name: nexus_player_engine
@@ -40,9 +38,8 @@ services:
 
   # ---------------------------------------------------------------------------
   # 3. Match Engine (Internal)
-  # Express high-throughput score database service.
   # ---------------------------------------------------------------------------
-  match_engine:
+  match-engine:
     build:
       context: ./services/match_engine
     container_name: nexus_match_engine
@@ -55,41 +52,37 @@ services:
 
   # ---------------------------------------------------------------------------
   # 4. Leaderboard Engine (Internal)
-  # Flask stateless business orchestrator (aggregates data & AI).
   # ---------------------------------------------------------------------------
-  leaderboard_engine:
+  leaderboard-engine:
     build:
       context: ./services/leaderboard_engine
     container_name: nexus_leaderboard_engine
     expose:
       - "8003"
     environment:
-      - PLAYER_ENGINE_URL=http://player_engine:8001
-      - MATCH_ENGINE_URL=http://match_engine:8002
-      - AI_ENGINE_URL=http://ai_engine:8004
+      - PLAYER_ENGINE_URL=http://player-engine:8001
+      - MATCH_ENGINE_URL=http://match-engine:8002
+      - AI_ENGINE_URL=http://ai-engine:8004
     networks:
       - nexus_internal
     depends_on:
-      - player_engine
-      - match_engine
-      - ai_engine
+      - player-engine
+      - match-engine
+      - ai-engine
 
   # ---------------------------------------------------------------------------
   # 5. AI Engine (Internal)
-  # FastAPI wrapper using LangChain to interface with your host's Ollama LLM.
   # ---------------------------------------------------------------------------
-  ai_engine:
+  ai-engine:
     build:
       context: ./services/ai_engine
     container_name: nexus_ai_engine
     expose:
       - "8004"
     environment:
-      # Overrides .env to route from Docker back to your host machine's Ollama port
       - OLLAMA_BASE_URL=http://host.docker.internal:11434
-      - OLLAMA_MODEL=qwen3.5:397b-cloud
+      - OLLAMA_MODEL=gemma4:31b-cloud
     extra_hosts:
-      # Injects host networking mapping for Linux/Docker host resolution
       - "host.docker.internal:host-gateway"
     networks:
       - nexus_internal
