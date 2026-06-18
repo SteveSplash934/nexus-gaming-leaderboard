@@ -11,7 +11,7 @@ For local development and testing, all five engines can be spun up simultaneousl
 **Prerequisites:**
 
 * Docker Desktop installed and running.
-* Ollama installed locally with the `llama3` model pulled (`ollama run llama3`).
+* Ollama installed locally with the `gemma4:31b-cloud` model pulled (`ollama run gemma4:31b-cloud`).
 
 **Startup Procedure:**
 
