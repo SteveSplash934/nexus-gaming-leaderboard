@@ -6,7 +6,7 @@ from langchain_ollama import OllamaLLM
 
 class Settings(BaseSettings):
     OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
-    OLLAMA_MODEL: str = "qwen3.5:397b-cloud"
+    OLLAMA_MODEL: str = "gemma4:31b-cloud"
 
     # Strict Pydantic v2 environment loading configuration
     model_config = SettingsConfigDict(env_file=".env")
