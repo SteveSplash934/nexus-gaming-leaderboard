@@ -1,28 +1,39 @@
 # Infrastructure & Deployment Guide
 
-**Project Name:** Nexus Gaming Leaderboard System
-
-This document outlines the deployment strategy for the Nexus architecture. To align with modern DevOps practices and ensure environment parity, the entire project is containerized.
+This document outlines the deployment and configuration strategy for the Nexus architecture. To align with modern DevOps practices and ensure environment parity, the entire project is containerized.
 
 ## 1. Local Development Strategy
 
 For local development and testing, all five engines can be spun up simultaneously using Docker Compose.
 
-**Prerequisites:**
+### Prerequisites
 
 * Docker Desktop installed and running.
-* Ollama installed locally with the `gemma4:31b-cloud` model pulled (`ollama run gemma4:31b-cloud`).
+* Ollama installed locally with your preferred model pulled (e.g., `gemma4:31b-cloud` or `qwen3.5:397b-cloud`).
 
-**Startup Procedure:**
+### Ollama Host Loopback Configuration (Windows)
+
+By default, the Ollama application binds to `127.0.0.1`, and Windows Defender Firewall blocks incoming connections from virtual subnets (like the Docker bridge network). To allow the containerized `ai-engine` to communicate with the host's Ollama instance, execute the following steps:
+
+1. **Configure Ollama Binding:**
+   * Quit Ollama completely from your taskbar system tray.
+   * Add a new System/User Environment Variable named `OLLAMA_HOST` with the value `0.0.0.0`.
+   * Relaunch the Ollama application.
+
+2. **Unblock Windows Defender Firewall:**
+   Open PowerShell as an Administrator and execute the following command to allow inbound TCP traffic on port 11434 from the virtual network adapter:
+   ```powershell
+   New-NetFirewallRule -DisplayName "Allow Ollama Port 11434 from Docker" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 11434
+   ```
+
+### Startup Procedure
 
 1. Navigate to the root directory of the repository.
 2. Execute the build command:
-```bash
-docker-compose up --build
-```
-
-
-3. The API Gateway will bind to `localhost:8000`. Internal services will run on ports `8001` through `8004` but do not need to be accessed directly by the host machine.
+   ```bash
+   docker compose up -d --build
+   ```
+3. The API Gateway will bind to `localhost:8000`. Internal services will run on ports `8001` through `8004` within the isolated `nexus_internal_network` bridge and do not need to be accessed directly by the host machine.
 
 ## 2. Production Deployment Strategy (VPS/Droplet)
 
@@ -39,12 +50,9 @@ For live deployment, we recommend provisioning a Linux Virtual Private Server (V
 1. Clone the repository to the production server.
 2. Set up environment variables (e.g., database credentials, internal service URLs) in a `.env` file.
 3. Run the orchestration command in detached mode:
-```bash
-docker-compose up -d
-
-```
-
-
+   ```bash
+   docker compose up -d
+   ```
 
 ### Phase 3: Traffic Routing & Security (Cloudflare)
 
