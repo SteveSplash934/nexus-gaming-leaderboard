@@ -1,17 +1,19 @@
 import os
 import requests
 from flask import Flask, jsonify
-from dotenv import load_dotenv
 
-# Automatically load local env configurations
-load_dotenv()
+# Safely load dotenv if present (prevents ModuleNotFoundError in Docker)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = Flask(__name__)
 
-# Defaults to Docker hostname, but overridden by .env on your host machine
-PLAYER_ENGINE_URL = os.environ.get("PLAYER_ENGINE_URL", "http://player_engine:8001")
-MATCH_ENGINE_URL = os.environ.get("MATCH_ENGINE_URL", "http://match_engine:8002")
-AI_ENGINE_URL = os.environ.get("AI_ENGINE_URL", "http://ai_engine:8004")
+PLAYER_ENGINE_URL = os.environ.get("PLAYER_ENGINE_URL", "http://player-engine:8001")
+MATCH_ENGINE_URL = os.environ.get("MATCH_ENGINE_URL", "http://match-engine:8002")
+AI_ENGINE_URL = os.environ.get("AI_ENGINE_URL", "http://ai-engine:8004")
 
 # Diagnostics: Prints out your active URLs on startup
 print("\n" + "="*50)
@@ -21,12 +23,6 @@ print(f" * Match Engine:       {MATCH_ENGINE_URL}")
 print(f" * AI Engine:          {AI_ENGINE_URL}")
 print("="*50 + "\n")
 
-# ---------------------------------------------------------------------------
-# Network Client Customization
-# We initialize a requests.Session and set trust_env to False.
-# This explicitly tells Python to ignore Windows global proxy configurations, 
-# resolving [WinError 10061] proxy-refusal loops.
-# ---------------------------------------------------------------------------
 http_client = requests.Session()
 http_client.trust_env = False
 
