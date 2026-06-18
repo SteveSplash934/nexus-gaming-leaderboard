@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods
 from django.db import IntegrityError
 from .models import Player
 
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def register_player(request):
