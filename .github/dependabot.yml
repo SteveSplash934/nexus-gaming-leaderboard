@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # 1. API Gateway Engine
+  - package-ecosystem: "pip"
+    directory: "/services/api_gateway_engine"
+    schedule:
+      interval: "weekly"
+
+  # 2. Player Engine
+  - package-ecosystem: "pip"
+    directory: "/services/player_engine"
+    schedule:
+      interval: "weekly"
+
+  # 3. Match Engine (Bun/NPM)
+  - package-ecosystem: "npm"
+    directory: "/services/match_engine"
+    schedule:
+      interval: "weekly"
+
+  # 4. Leaderboard Engine
+  - package-ecosystem: "pip"
+    directory: "/services/leaderboard_engine"
+    schedule:
+      interval: "weekly"
+
+  # 5. AI Engine
+  - package-ecosystem: "pip"
+    directory: "/services/ai_engine"
+    schedule:
+      interval: "weekly"

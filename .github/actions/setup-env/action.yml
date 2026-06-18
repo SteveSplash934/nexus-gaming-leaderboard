@@ -1,0 +1,36 @@
+name: 'Setup Environment'
+description: 'Configures Python and Bun runtimes with optimized dependency caching'
+
+inputs:
+  python-version:
+    description: 'Python version to configure'
+    required: false
+    default: '3.13'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: 'pip'
+        # Automatically cache pip dependencies across all four Python microservices
+        cache-dependency-path: |
+          services/api_gateway_engine/requirements.txt
+          services/player_engine/requirements.txt
+          services/leaderboard_engine/requirements.txt
+          services/ai_engine/requirements.txt
+
+    - name: Set up Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+
+    - name: Cache Bun dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-bun-${{ hashFiles('services/match_engine/bun.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-

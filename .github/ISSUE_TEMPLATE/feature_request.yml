@@ -1,0 +1,16 @@
+name: Feature Request
+description: Propose a new feature, engine optimization, or documentation update
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: What system behavior or capability are you proposing?
+    validations:
+      required: true
+  - type: textarea
+    id: justification
+    attributes:
+      label: Architectural Justification
+      description: Explain how this enhancement fits into our Service-Oriented Architecture (SOA) and isolates dependencies.

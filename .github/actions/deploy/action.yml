@@ -1,0 +1,47 @@
+name: 'Deploy to VPS'
+description: 'Deploys the containerized stack to a remote Linux VPS via SSH'
+
+inputs:
+  ssh-private-key:
+    description: 'Private SSH key for VPS authentication'
+    required: true
+  vps-ip:
+    description: 'Public IP of the VPS'
+    required: true
+  vps-user:
+    description: 'SSH user'
+    required: false
+    default: 'root'
+  deploy-path:
+    description: 'Absolute path to the repository on the VPS'
+    required: false
+    default: '/var/www/nexus'
+  branch:
+    description: 'Git branch to pull and deploy'
+    required: false
+    default: 'master'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Execute Remote Deployment Commands
+      shell: bash
+      run: |
+        # Setup SSH directory and register key
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        echo "${{ inputs.ssh-private-key }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        
+        # Scan SSH host key to prevent interactive confirmation prompts
+        ssh-keyscan -H ${{ inputs.vps-ip }} >> ~/.ssh/known_hosts
+        
+        # Run the remote deployment commands
+        ssh ${{ inputs.vps-user }}@${{ inputs.vps-ip }} "
+          cd ${{ inputs.deploy-path }} && \
+          git fetch origin && \
+          git checkout ${{ inputs.branch }} && \
+          git pull origin ${{ inputs.branch }} && \
+          docker compose down && \
+          docker compose up -d --build
+        "

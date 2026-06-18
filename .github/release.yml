@@ -1,0 +1,13 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - dependabot[bot]
+  categories:
+    - title: Microservice Features
+      labels:
+        - enhancement
+    - title: Bug Fixes and Routing Solutions
+      labels:
+        - bug

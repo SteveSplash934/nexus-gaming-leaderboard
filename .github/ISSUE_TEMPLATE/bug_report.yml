@@ -1,0 +1,33 @@
+name: Bug Report
+description: File a structured bug report to help resolve system issues
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for taking the time to report this issue!
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: dropdown
+    id: service
+    attributes:
+      label: Affected Microservice
+      options:
+        - API Gateway Engine (8000)
+        - Player Engine (8001)
+        - Match Engine (8002)
+        - Leaderboard Engine (8003)
+        - AI Engine (8004)
+        - Global Docker Compose Networking
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Terminal / Container Logs
+      description: Copy and paste the raw traceback logs here.
+      render: shell
