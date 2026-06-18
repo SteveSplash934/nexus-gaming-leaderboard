@@ -1,0 +1,238 @@
+{
+    "info": {
+        "_postman_id": "8ceaa3cb-3d44-46d3-83c8-2f8854a0d298",
+        "name": "Nexus Gaming Leaderboard System",
+        "description": "Headless API integration collection for the Nexus Gaming Leaderboard System. Enforces dynamic payload handling, status code assertions, and variable auto-population\n\n[https://github.com/SteveSplash934/nexus-gaming-leaderboard](https://github.com/SteveSplash934/nexus-gaming-leaderboard)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "40779237",
+        "_collection_link": "https://go.postman.co/collection/40779237-8ceaa3cb-3d44-46d3-83c8-2f8854a0d298?source=collection_link"
+    },
+    "item": [
+        {
+            "name": "System Health Check",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "const jsonData = pm.response.json();",
+                            "pm.test(\"Verify all system components are healthy\", function () {",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "    pm.expect(jsonData.gateway_status).to.eql(\"operational\");",
+                            "    pm.expect(jsonData.services.player_engine.status).to.eql(\"healthy\");",
+                            "    pm.expect(jsonData.services.match_engine.status).to.eql(\"healthy\");",
+                            "    pm.expect(jsonData.services.leaderboard_engine.status).to.eql(\"healthy\");",
+                            "    pm.expect(jsonData.services.ai_engine.status).to.eql(\"healthy\");",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/health",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "health"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Register Player",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "exec": [
+                            "// Generate a random numeric suffix for the username",
+                            "const randomInt = Math.floor(Math.random() * 900) + 100;",
+                            "const username = \"Gamer_\" + randomInt;",
+                            "pm.collectionVariables.set(\"dynamic_username\", username);"
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 201\", function () {",
+                            "    pm.response.to.have.status(201);",
+                            "});",
+                            "",
+                            "const jsonData = pm.response.json();",
+                            "pm.test(\"Validate JSON Contract schema\", function () {",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "    pm.expect(jsonData.data).to.have.property('id');",
+                            "    pm.expect(jsonData.data).to.have.property('username');",
+                            "    pm.expect(jsonData.data.username).to.eql(pm.collectionVariables.get(\"dynamic_username\"));",
+                            "});",
+                            "",
+                            "// Auto-save the registered player ID to variables",
+                            "if (jsonData.success && jsonData.data && jsonData.data.id) {",
+                            "    pm.collectionVariables.set(\"player_id\", jsonData.data.id);",
+                            "    console.log(\"Auto-saved player_id: \" + jsonData.data.id);",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\": \"{{dynamic_username}}\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/v1/players/register",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "players",
+                        "register"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Submit Match Score",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "exec": [
+                            "// Generate a random score between 1000 and 20000",
+                            "const randomScore = Math.floor(Math.random() * 19000) + 1000;",
+                            "pm.collectionVariables.set(\"random_score\", randomScore);"
+                        ],
+                        "type": "text/javascript"
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 201\", function () {",
+                            "    pm.response.to.have.status(201);",
+                            "});",
+                            "",
+                            "const jsonData = pm.response.json();",
+                            "pm.test(\"Validate score submission feedback\", function () {",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "    pm.expect(jsonData.message).to.eql(\"Match score recorded successfully\");",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"player_id\": \"{{player_id}}\",\n    \"score\": {{random_score}}\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/api/v1/scores",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "scores"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get Leaderboard",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "pm.test(\"Status code is 200\", function () {",
+                            "    pm.response.to.have.status(200);",
+                            "});",
+                            "",
+                            "const jsonData = pm.response.json();",
+                            "pm.test(\"Validate leaderboard output format\", function () {",
+                            "    pm.expect(jsonData.success).to.eql(true);",
+                            "    pm.expect(jsonData.data).to.have.property('ranks');",
+                            "    pm.expect(jsonData.data).to.have.property('ai_hype_message');",
+                            "    pm.expect(Array.isArray(jsonData.data.ranks)).to.eql(true);",
+                            "});"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{base_url}}/api/v1/leaderboard",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "api",
+                        "v1",
+                        "leaderboard"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000"
+        },
+        {
+            "key": "player_id",
+            "value": ""
+        },
+        {
+            "key": "dynamic_username",
+            "value": ""
+        },
+        {
+            "key": "random_score",
+            "value": ""
+        }
+    ]
+}
