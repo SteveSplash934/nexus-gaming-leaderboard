@@ -27,6 +27,15 @@ runs:
     - name: Execute Remote Deployment Commands
       shell: bash
       run: |
+        # Empty-Secret Protection: Exit gracefully if credentials are not configured in GitHub
+        if [ -z "${{ inputs.vps-ip }}" ] || [ -z "${{ inputs.ssh-private-key }}" ]; then
+          echo "========================================================================"
+          print "WARNING: VPS_IP or SSH_PRIVATE_KEY is not configured in GitHub Secrets."
+          print "Skipping remote deployment steps."
+          echo "========================================================================"
+          exit 0
+        fi
+
         # Setup SSH directory and register key
         mkdir -p ~/.ssh
         chmod 700 ~/.ssh
