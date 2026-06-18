@@ -14,7 +14,7 @@ app = FastAPI(
     description="Secure entry point and circuit breaker for the Nexus Gaming Leaderboard System.",
     version="1.0.0",
     docs_url="/api/docs",
-    redoc_url="/api/redoc"
+    redoc_url="/api/redoc",
 )
 
 app.add_middleware(
@@ -32,6 +32,7 @@ app.include_router(players.router, prefix="/api/v1")
 app.include_router(scores.router, prefix="/api/v1")
 app.include_router(leaderboard.router, prefix="/api/v1")
 
+
 # ---------------------------------------------------------------------------
 # Dynamic Gateway Health Aggregator
 # ---------------------------------------------------------------------------
@@ -42,7 +43,7 @@ async def health_check():
         "player_engine": f"{settings.PLAYER_ENGINE_URL}/health",
         "match_engine": f"{settings.MATCH_ENGINE_URL}/health",
         "leaderboard_engine": f"{settings.LEADERBOARD_ENGINE_URL}/health",
-        "ai_engine": f"{settings.AI_ENGINE_URL}/health"
+        "ai_engine": f"{settings.AI_ENGINE_URL}/health",
     }
 
     async def ping_service(name: str, url: str):
@@ -52,7 +53,10 @@ async def health_check():
                 response = await client.get(url, timeout=1.5)
                 if response.status_code == 200:
                     return name, {"status": "healthy", "details": response.json()}
-                return name, {"status": "unhealthy", "error": f"HTTP {response.status_code}"}
+                return name, {
+                    "status": "unhealthy",
+                    "error": f"HTTP {response.status_code}",
+                }
             except Exception:
                 return name, {"status": "offline", "error": "Unreachable or timed out"}
 
@@ -70,5 +74,5 @@ async def health_check():
     return {
         "success": True,
         "gateway_status": "operational" if all_critical_healthy else "degraded",
-        "services": health_results
+        "services": health_results,
     }

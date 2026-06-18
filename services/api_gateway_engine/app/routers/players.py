@@ -5,8 +5,10 @@ from app.services.circuit_breaker import forward_request
 
 router = APIRouter(prefix="/players", tags=["Players"])
 
+
 class RegisterPlayerRequest(BaseModel):
     username: str = Field(..., min_length=3, max_length=15)
+
 
 @router.post("/register")
 async def register_player(request: RegisterPlayerRequest):
