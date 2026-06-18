@@ -3,17 +3,19 @@ name: 'Nexus_Gaming_Leaderboard_System'
 services:
   # ---------------------------------------------------------------------------
   # 1. API Gateway Engine (Public Facing)
+  # Central traffic controller and health monitor.
   # ---------------------------------------------------------------------------
   api_gateway_engine:
     build:
       context: ./services/api_gateway_engine
     container_name: nexus_api_gateway
     ports:
-      - "8000:8000"
+      - "8000:8000" # Exposes only the gateway publicly
     environment:
       - PLAYER_ENGINE_URL=http://player_engine:8001
       - MATCH_ENGINE_URL=http://match_engine:8002
       - LEADERBOARD_ENGINE_URL=http://leaderboard_engine:8003
+      - AI_ENGINE_URL=http://ai_engine:8004
     networks:
       - nexus_internal
     depends_on:
@@ -23,6 +25,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # 2. Player Engine (Internal)
+  # Django profile database service.
   # ---------------------------------------------------------------------------
   player_engine:
     build:
@@ -37,6 +40,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # 3. Match Engine (Internal)
+  # Express high-throughput score database service.
   # ---------------------------------------------------------------------------
   match_engine:
     build:
@@ -51,6 +55,7 @@ services:
 
   # ---------------------------------------------------------------------------
   # 4. Leaderboard Engine (Internal)
+  # Flask stateless business orchestrator (aggregates data & AI).
   # ---------------------------------------------------------------------------
   leaderboard_engine:
     build:
@@ -67,14 +72,27 @@ services:
     depends_on:
       - player_engine
       - match_engine
-    #   - ai_engine
+      - ai_engine
 
   # ---------------------------------------------------------------------------
-  # Services 5 is commented out until we build its code/Dockerfile
+  # 5. AI Engine (Internal)
+  # FastAPI wrapper using LangChain to interface with your host's Ollama LLM.
   # ---------------------------------------------------------------------------
-  
-  # ai_engine:
-  # ... (commented out)
+  ai_engine:
+    build:
+      context: ./services/ai_engine
+    container_name: nexus_ai_engine
+    expose:
+      - "8004"
+    environment:
+      # Overrides .env to route from Docker back to your host machine's Ollama port
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - OLLAMA_MODEL=qwen3.5:397b-cloud
+    extra_hosts:
+      # Injects host networking mapping for Linux/Docker host resolution
+      - "host.docker.internal:host-gateway"
+    networks:
+      - nexus_internal
 
 # ---------------------------------------------------------------------------
 # Volumes & Networks
