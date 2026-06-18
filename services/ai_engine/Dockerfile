@@ -9,8 +9,8 @@ COPY requirements.txt .
 # Enabled caching
 RUN pip install -r requirements.txt
 
-COPY . .
+COPY ./app ./app
 
-EXPOSE 8003
+EXPOSE 8004
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8003", "app:app"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
