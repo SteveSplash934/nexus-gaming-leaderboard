@@ -8,11 +8,11 @@ The backend is decoupled into five independent, isolated engines communicating v
 
 For technical deep-dives on individual components, refer to their respective directories:
 
-* **API Gateway Engine (services/api_gateway_engine):** Python and FastAPI. Serves as the single, public-facing gateway and circuit breaker.
-* **Player Engine (services/player_engine):** Python and Django. Manages player accounts, persistent profiles, and identities.
-* **Match Engine (services/match_engine):** Node.js and Express running on Bun. Specialized for high-throughput score logging.
-* **Leaderboard Engine (services/leaderboard_engine):** Python and Flask. Stateless business orchestrator that performs soft joins across services.
-* **AI Engine (services/ai_engine):** Python and FastAPI. Integrates with Ollama via LangChain to generate dynamic Esports-commentary hype messages.
+* **[API Gateway Engine](services/api_gateway_engine/README.md) (`services/api_gateway_engine`):** Python and FastAPI. Serves as the single, public-facing gateway and circuit breaker.
+* **[Player Engine](services/player_engine/README.md) (`services/player_engine`):** Python and Django. Manages player accounts, persistent profiles, and identities.
+* **[Match Engine](services/match_engine/README.md) (`services/match_engine`):** Node.js and Express running on Bun. Specialized for high-throughput score logging.
+* **[Leaderboard Engine](services/leaderboard_engine/README.md) (`services/leaderboard_engine`):** Python and Flask. Stateless business orchestrator that performs soft joins across services.
+* **[AI Engine](services/ai_engine/README.md) (`services/ai_engine`):** Python and FastAPI. Integrates with Ollama via LangChain to generate dynamic Esports-commentary hype messages.
 
 ## Prerequisites
 
