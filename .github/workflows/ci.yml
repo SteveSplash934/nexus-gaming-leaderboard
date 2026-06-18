@@ -8,7 +8,7 @@ on:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Job 1: Static Code Analysis and Linting
+  # Job 1: Static Code Analysis and Linting (Consolidated to Ruff)
   # ---------------------------------------------------------------------------
   lint:
     name: Code Linting
@@ -20,11 +20,13 @@ jobs:
       - name: Set up Environment
         uses: ./.github/actions/setup-env
 
-      - name: Lint Python Code
+      - name: Lint and Format with Ruff
         shell: bash
         run: |
-          pip install black ruff
-          black --check services/api_gateway_engine services/player_engine services/leaderboard_engine services/ai_engine
+          pip install ruff
+          # 1. Verify code layout formatting (replaces Black)
+          ruff format --check services/api_gateway_engine services/player_engine services/leaderboard_engine services/ai_engine
+          # 2. Verify code quality rules (unused imports, etc.)
           ruff check services/api_gateway_engine services/player_engine services/leaderboard_engine services/ai_engine
 
   # ---------------------------------------------------------------------------
