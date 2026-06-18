@@ -1,19 +1,40 @@
 import os
 import requests
 from flask import Flask, jsonify
+from dotenv import load_dotenv
+
+# Automatically load local env configurations
+load_dotenv()
 
 app = Flask(__name__)
 
-# Fallbacks default to Docker internal aliases, overridable locally via Env vars
+# Defaults to Docker hostname, but overridden by .env on your host machine
 PLAYER_ENGINE_URL = os.environ.get("PLAYER_ENGINE_URL", "http://player_engine:8001")
 MATCH_ENGINE_URL = os.environ.get("MATCH_ENGINE_URL", "http://match_engine:8002")
 AI_ENGINE_URL = os.environ.get("AI_ENGINE_URL", "http://ai_engine:8004")
+
+# Diagnostics: Prints out your active URLs on startup
+print("\n" + "="*50)
+print("LEADERBOARD ENGINE STARTUP ROUTING INFO")
+print(f" * Player Engine:      {PLAYER_ENGINE_URL}")
+print(f" * Match Engine:       {MATCH_ENGINE_URL}")
+print(f" * AI Engine:          {AI_ENGINE_URL}")
+print("="*50 + "\n")
+
+# ---------------------------------------------------------------------------
+# Network Client Customization
+# We initialize a requests.Session and set trust_env to False.
+# This explicitly tells Python to ignore Windows global proxy configurations, 
+# resolving [WinError 10061] proxy-refusal loops.
+# ---------------------------------------------------------------------------
+http_client = requests.Session()
+http_client.trust_env = False
 
 @app.route("/api/v1/leaderboard", methods=["GET"])
 def get_leaderboard():
     try:
         # 1. Query Match Engine for top standings
-        match_response = requests.get(f"{MATCH_ENGINE_URL}/internal/scores/top", timeout=2.0)
+        match_response = http_client.get(f"{MATCH_ENGINE_URL}/internal/scores/top", timeout=2.0)
         if match_response.status_code != 200:
             return jsonify({
                 "success": False,
@@ -32,13 +53,13 @@ def get_leaderboard():
             high_score = score_record.get("high_score")
             
             try:
-                player_response = requests.get(f"{PLAYER_ENGINE_URL}/internal/players/{player_id}", timeout=1.5)
+                player_response = http_client.get(f"{PLAYER_ENGINE_URL}/internal/players/{player_id}", timeout=1.5)
                 if player_response.status_code == 200:
                     username = player_response.json().get("data", {}).get("username", "Unknown Player")
                 else:
                     username = "Unknown Player"
-            except requests.RequestException:
-                # Fail-safe: if Player Engine is offline, do not crash; return rankings as "Unknown Player"
+            except requests.RequestException as e:
+                print(f"DEBUG Error: Could not resolve player {player_id}. Details: {e}")
                 username = "Unknown Player"
                 
             ranks.append({
@@ -47,7 +68,7 @@ def get_leaderboard():
                 "high_score": high_score
             })
             
-        # 3. Request AI Hype Message (Fallback implementation)
+        # 3. Request AI Hype Message
         ai_hype_message = "Oops! The dynamic AI hype engine is temporarily offline."
         if ranks:
             try:
@@ -56,12 +77,14 @@ def get_leaderboard():
                     "username": top_player["username"],
                     "high_score": top_player["high_score"]
                 }
-                ai_response = requests.post(f"{AI_ENGINE_URL}/internal/generate/hype", json=payload, timeout=2.0)
+                ai_response = http_client.post(f"{AI_ENGINE_URL}/internal/generate/hype", json=payload, timeout=5.0)
                 if ai_response.status_code == 200:
                     ai_hype_message = ai_response.json().get("data", {}).get("hype_message", ai_hype_message)
-            except requests.RequestException:
-                # Circuit Breaker: Keep the friendly offline string instead of failing the request
-                pass
+                else:
+                    print(f"DEBUG Error: AI Engine returned status code {ai_response.status_code}")
+            except requests.RequestException as e:
+                # Diagnostics: Print why the AI connection is failing
+                print(f"DEBUG Error: Connection to AI Engine failed at {AI_ENGINE_URL}. Details: {e}")
 
         return jsonify({
             "success": True,
@@ -72,8 +95,8 @@ def get_leaderboard():
             }
         }), 200
 
-    except requests.RequestException:
-        # Crucial fallback if match_engine is entirely unreachable
+    except requests.RequestException as e:
+        print(f"DEBUG Error: Critical dependency unreachable. Details: {e}")
         return jsonify({
             "success": False,
             "error": {
@@ -82,7 +105,8 @@ def get_leaderboard():
             }
         }), 503
         
-    except Exception:
+    except Exception as e:
+        print(f"DEBUG Error: Unexpected exception. Details: {e}")
         return jsonify({
             "success": False,
             "error": {
